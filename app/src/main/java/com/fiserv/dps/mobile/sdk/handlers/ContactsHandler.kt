@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.database.Cursor
+import android.os.Handler
+import android.os.Looper
 import android.provider.ContactsContract
 import android.util.Log
 import android.webkit.JavascriptInterface
@@ -28,27 +30,26 @@ class ContactsHandlerImpl(private val activity: Activity, private val evaluateJS
 
     @JavascriptInterface override fun getContacts() {
 
-        Toast.makeText(activity, "getContacts called", Toast.LENGTH_LONG).show()
-        evaluateJS("callbackContacts({contact: '${"callbackContacts called"}'})")
+       // Toast.makeText(activity, "getContacts called", Toast.LENGTH_LONG).show()
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            evaluateJS("callbackContacts({contacts: '${"getContacts called"}'})")
+        }, 3000)
 
     }
     @JavascriptInterface override fun getOneContact(key : String) {
 
-        Toast.makeText(activity, "getOneContact called", Toast.LENGTH_LONG).show()
+        //Toast.makeText(activity, "getOneContact called", Toast.LENGTH_LONG).show()
 
-        evaluateJS("callbackOneContact({contact: '${"getOneContact called"}'})")
-
-//        sharedPreferences = activity.getSharedPreferences("zelle", Context.MODE_PRIVATE)
-//        var allowed = sharedPreferences!!.getBoolean("allowed", false)
+        sharedPreferences = activity.getSharedPreferences("zelle", Context.MODE_PRIVATE)
+        var allowed = sharedPreferences!!.getBoolean("allowed", false)
+        enableRuntimePermission()
 //        if (allowed) {
-//            getContact(key)
-//
+            getContact(key)
+
 //        } else {
 //            enableRuntimePermission()
 //        }
-//
-//        enableRuntimePermission()
-
     }
 
     private fun getContact(key : String) {
@@ -79,12 +80,11 @@ class ContactsHandlerImpl(private val activity: Activity, private val evaluateJS
 
         Log.d("Contact Name", contact!!.name.toString())
 
-        evaluateJS("callbackOneContact({contact: '${contact!!.name}'})")
+        Handler(Looper.getMainLooper()).postDelayed({
+            evaluateJS("callbackOneContact({contact: '${contact!!.name}'})")
+        }, 3000)
 
     }
-
-
-
     private fun enableRuntimePermission() {
 
         if (ActivityCompat.shouldShowRequestPermissionRationale(
@@ -105,4 +105,5 @@ class ContactsHandlerImpl(private val activity: Activity, private val evaluateJS
             )
         }
     }
+
 }
