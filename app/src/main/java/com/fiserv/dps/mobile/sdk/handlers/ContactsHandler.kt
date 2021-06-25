@@ -4,15 +4,17 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.os.Handler
 import android.os.Looper
 import android.provider.ContactsContract
 import android.util.Log
 import android.webkit.JavascriptInterface
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.requestPermissions
 import com.fiserv.dps.mobile.sdk.bridge.model.Contact
+
 
 interface ContactsHandler {
     @JavascriptInterface fun getContacts()
@@ -26,30 +28,19 @@ class ContactsHandlerImpl(private val activity: Activity, private val evaluateJS
     var name: String? = null
     var phonenumber: String? = null
     var sharedPreferences : SharedPreferences? = null
-    var mycontact : Contact? = null
 
     @JavascriptInterface override fun getContacts() {
 
-       // Toast.makeText(activity, "getContacts called", Toast.LENGTH_LONG).show()
-
         Handler(Looper.getMainLooper()).postDelayed({
-            evaluateJS("callbackContacts({contacts: '${"getContacts called"}'})")
-        }, 3000)
+            evaluateJS("callbackContacts({contacts: '${"All contacts feature is in progress, Available Soon"}'})")
+        }, 1000)
 
     }
     @JavascriptInterface override fun getOneContact(key : String) {
 
-        //Toast.makeText(activity, "getOneContact called", Toast.LENGTH_LONG).show()
-
         sharedPreferences = activity.getSharedPreferences("zelle", Context.MODE_PRIVATE)
         var allowed = sharedPreferences!!.getBoolean("allowed", false)
-        enableRuntimePermission()
-//        if (allowed) {
-            getContact(key)
-
-//        } else {
-//            enableRuntimePermission()
-//        }
+        enableRuntimePermission(key)
     }
 
     private fun getContact(key : String) {
@@ -69,8 +60,7 @@ class ContactsHandlerImpl(private val activity: Activity, private val evaluateJS
             phonenumber =
                 cursor!!.getString(cursor!!.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
 
-
-            if (name.toString().contains(key) || phonenumber.toString().contains(key)) {
+            if (name.toString().toLowerCase().trim().contains(key.toLowerCase().trim()) || phonenumber.toString().contains(key)) {
                 contact = Contact()
                 contact.name = name
                 contact.number = phonenumber
@@ -78,32 +68,26 @@ class ContactsHandlerImpl(private val activity: Activity, private val evaluateJS
         }
         cursor!!.close()
 
-        Log.d("Contact Name", contact!!.name.toString())
+        if(contact == null) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                evaluateJS("callbackOneContact({contact: '${"Contact Not Found"}'})")
+            }, 1000)
+        } else {
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            evaluateJS("callbackOneContact({contact: '${contact!!.name}'})")
-        }, 3000)
+            Log.d("Contact Name", contact!!.name.toString())
+            Handler(Looper.getMainLooper()).postDelayed({
+                evaluateJS("callbackOneContact({contact: '${contact!!.name + "," + contact!!.number}'})")
+            }, 1000)
+        }
 
     }
-    private fun enableRuntimePermission() {
 
-        if (ActivityCompat.shouldShowRequestPermissionRationale(
-                activity,
-                Manifest.permission.READ_CONTACTS
-            )
-        ) {
-            Toast.makeText(
-                activity,
-                "CONTACTS permission allows us to Access CONTACTS app",
-                Toast.LENGTH_LONG
-            ).show()
+    private fun enableRuntimePermission(key : String) {
+
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(activity, arrayOf(Manifest.permission.READ_CONTACTS), RequestPermissionCode)
         } else {
-            ActivityCompat.requestPermissions(
-                activity, arrayOf(
-                    Manifest.permission.READ_CONTACTS
-                ), RequestPermissionCode
-            )
+            getContact(key)
         }
     }
-
 }

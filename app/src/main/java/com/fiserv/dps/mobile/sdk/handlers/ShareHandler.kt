@@ -11,13 +11,11 @@ interface ShareHandler {
 
 class ShareHandlerImpl(private val activity: Activity, private val evaluateJS: (String)->Unit): ShareHandler {
     @JavascriptInterface override fun sharePhoto() {
-        Toast.makeText(activity, "sharePhoto Called", Toast.LENGTH_LONG).show()
-
+        Toast.makeText(activity, "Share photo feature is in progress, Available Soon", Toast.LENGTH_LONG).show()
     }
     @JavascriptInterface override fun shareText() {
 
-
-        Toast.makeText(activity, "shareText Called", Toast.LENGTH_LONG).show()
+        Toast.makeText(activity, "Share text feature is in progress, Available Soon", Toast.LENGTH_LONG).show()
 
     }
 }

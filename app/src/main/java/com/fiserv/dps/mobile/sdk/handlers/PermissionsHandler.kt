@@ -1,6 +1,8 @@
 package com.fiserv.dps.mobile.sdk.handlers
 
 import android.app.Activity
+import android.os.Handler
+import android.os.Looper
 import android.webkit.JavascriptInterface
 import android.widget.Toast
 
@@ -12,7 +14,9 @@ class PermissionsHandlerImpl(private val activity: Activity, private val evaluat
 
     @JavascriptInterface override fun checkPermissions() {
 
-        Toast.makeText(activity, "getLocation called", Toast.LENGTH_LONG).show()
+        Handler(Looper.getMainLooper()).postDelayed({
+            evaluateJS("callbackPermissions({permission: '${"Check permissions feature is in progress, Available Soon"}'})")
+        }, 1000)
 
     }
 }

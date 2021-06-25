@@ -5,11 +5,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.JsResult
+import android.webkit.WebChromeClient
+import android.webkit.WebView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.fiserv.dps.mobile.sdk.R
@@ -22,13 +25,17 @@ import kotlinx.android.synthetic.main.fragment_bridge_view.*
 open class BridgeFragment(
     private val activity: Activity,
     private val config: BridgeConfig
-): DialogFragment()  {
+): DialogFragment() {
 
     private val RequestPermissionCode = 1
     private val evaluateJS = { js: String -> webView.evaluateJavascript(js, null) }
-    var sharedPreferences : SharedPreferences? = null
+    var sharedPreferences: SharedPreferences? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_bridge_view, container, false)
     }
 
@@ -38,7 +45,17 @@ open class BridgeFragment(
         sharedPreferences = activity.getSharedPreferences("zelle", Context.MODE_PRIVATE)
         webView.settings.javaScriptEnabled = true
 
-        webView.addJavascriptInterface(Handlers(activity, this, evaluateJS), "android")
+        webView.addJavascriptInterface(Handlers(activity, this, evaluateJS), "FTAndroid")
+        webView.setWebChromeClient(object : WebChromeClient() {
+            override fun onJsAlert(
+                view: WebView?,
+                url: String?,
+                message: String?,
+                result: JsResult?
+            ): Boolean {
+                return super.onJsAlert(view, url, message, result)
+            }
+        })
         webView.loadUrl(config.url)
     }
 
@@ -53,31 +70,9 @@ open class BridgeFragment(
         }
     }
 
-    // callback methods
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        when (requestCode) {
-            RequestPermissionCode -> if (grantResults.size > 0 && grantResults.get(0) === PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(
-                    activity,
-                    "Permission Granted, Now your application can access CONTACTS.",
-                    Toast.LENGTH_LONG
-                ).show()
-
-//                var editor = sharedPreferences!!.edit()
-//                editor.putBoolean("allowed", true)
-//                editor.commit()
-               // getAllContactsList()
-            } else {
-                Toast.makeText(
-                    activity,
-                    "Permission Canceled, Now your application cannot access CONTACTS.",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
+        Log.d("Permission", "Called")
+        Toast.makeText(activity, "Permission Denied", Toast.LENGTH_SHORT).show()
     }
-
 }

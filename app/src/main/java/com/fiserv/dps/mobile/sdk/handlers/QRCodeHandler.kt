@@ -17,22 +17,15 @@ class QRCodeHandlerImpl(private val fragment: Fragment, private val evaluateJS: 
     @JavascriptInterface
     override fun scanQRCode() {
 
-//        Toast.makeText(fragment.context, "scanQRCode Called", Toast.LENGTH_LONG).show()
-//        val i = IntentIntegrator.forSupportFragment(fragment)
-//        i.setBeepEnabled(false)
-//        i.initiateScan(listOf(IntentIntegrator.QR_CODE))
-
         Handler(Looper.getMainLooper()).postDelayed({
-            evaluateJS("callbackQRCode({code: '${"scanQRCode not implemented"}'})")
-        }, 3000)
+            evaluateJS("callbackQRCode({code: '${"QR code feature is in progress, Available Soon"}'})")
+        }, 1000)
     }
 
     @JavascriptInterface override fun selectQRCodeFromPhotos() {
 
         Handler(Looper.getMainLooper()).postDelayed({
-            evaluateJS("callbackQRCode({code: '${"selectQRCodeFromPhotos not implemented"}'})")
-        }, 3000)
-
-      //  Toast.makeText(fragment.context, "selectQRCodeFromPhotos Called", Toast.LENGTH_LONG).show()
+            evaluateJS("callbackQRCode({code: '${"QR code feature is in progress, Available Soon"}'})")
+        }, 1000)
     }
 }

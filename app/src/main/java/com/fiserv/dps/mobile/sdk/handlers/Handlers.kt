@@ -15,3 +15,6 @@ class Handlers(
         PhotosHandler by PhotosHandlerImpl(fragment, evaluateJS),
         ShareHandler by ShareHandlerImpl(activity, evaluateJS),
         PopupHandler by PopupHandlerImpl(fragment)
+
+
+

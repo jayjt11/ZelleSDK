@@ -15,18 +15,14 @@ interface PhotosHandler {
 class PhotosHandlerImpl(private val fragment: Fragment, private val evaluateJS: (String)->Unit): PhotosHandler {
     @JavascriptInterface override fun takePhoto() {
 
-       // Toast.makeText(fragment.context, "takePhoto called", Toast.LENGTH_LONG).show()
-
         Handler(Looper.getMainLooper()).postDelayed({
-            evaluateJS("callbackPhoto({photo: '${"takePhoto called"}'})")
-        }, 3000)
+            evaluateJS("callbackPhoto({photo: '${"Photo feature is in progress, Available Soon"}'})")
+        }, 1000)
     }
     @JavascriptInterface override fun selectFromPhotos() {
 
         Handler(Looper.getMainLooper()).postDelayed({
-            evaluateJS("callbackPhoto({photo: '${"selectFromPhotos called"}'})")
-        }, 3000)
-
-       // Toast.makeText(fragment.context, "selectFromPhotos called", Toast.LENGTH_LONG).show()
+            evaluateJS("callbackPhoto({photo: '${"Photo feature is in progress, Available Soon"}'})")
+        }, 1000)
     }
 }
